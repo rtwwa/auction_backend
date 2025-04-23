@@ -60,70 +60,55 @@ class Product {
     return result.rows[0];
   }
 
-  static async findProducts(query) {
+  static async findProducts(filters, page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
     let sql = "SELECT * FROM products WHERE 1=1";
     const values = [];
     let paramCount = 1;
 
-    if (query.title) {
+    if (filters.title) {
       sql += ` AND title ILIKE $${paramCount++}`;
-      values.push(`%${query.title}%`);
+      values.push(`%${filters.title}%`);
     }
-
-    if (query.category_id) {
+    if (filters.category_id) {
       sql += ` AND category_id = $${paramCount++}`;
-      values.push(parseInt(query.category_id));
+      values.push(parseInt(filters.category_id));
     }
-
-    if (query.price_start_min) {
+    if (filters.price_start_min) {
       sql += ` AND price_start >= $${paramCount++}`;
-      values.push(parseFloat(query.price_start_min));
+      values.push(parseFloat(filters.price_start_min));
     }
-
-    if (query.price_start_max) {
+    if (filters.price_start_max) {
       sql += ` AND price_start <= $${paramCount++}`;
-      values.push(parseFloat(query.price_start_max));
+      values.push(parseFloat(filters.price_start_max));
     }
-
-    if (query.buy_now_price_min) {
-      sql += ` AND buy_now_price >= $${paramCount++}`;
-      values.push(parseFloat(query.buy_now_price_min));
-    }
-
-    if (query.buy_now_price_max) {
-      sql += ` AND buy_now_price <= $${paramCount++}`;
-      values.push(parseFloat(query.buy_now_price_max));
-    }
-
-    if (query.brand) {
+    if (filters.brand) {
       sql += ` AND brand ILIKE $${paramCount++}`;
-      values.push(`%${query.brand}%`);
+      values.push(`%${filters.brand}%`);
     }
-
-    if (query.color) {
+    if (filters.color) {
       sql += ` AND color ILIKE $${paramCount++}`;
-      values.push(`%${query.color}%`);
+      values.push(`%${filters.color}%`);
     }
-
-    if (query.size) {
+    if (filters.size) {
       sql += ` AND size ILIKE $${paramCount++}`;
-      values.push(`%${query.size}%`);
+      values.push(`%${filters.size}%`);
     }
-
-    if (query.material) {
+    if (filters.material) {
       sql += ` AND material ILIKE $${paramCount++}`;
-      values.push(`%${query.material}%`);
+      values.push(`%${filters.material}%`);
     }
-
-    if (query.season) {
+    if (filters.season) {
       sql += ` AND season ILIKE $${paramCount++}`;
-      values.push(`%${query.season}%`);
+      values.push(`%${filters.season}%`);
+    }
+    if (filters.gender) {
+      sql += ` AND gender = $${paramCount++}`;
+      values.push(filters.gender);
     }
 
-    if (query.gender) {
-      sql += ` AND gender = $${paramCount++}`;
-      values.push(query.gender);
-    }
+    sql += ` LIMIT $${paramCount++} OFFSET $${paramCount++}`;
+    values.push(limit, offset);
 
     const result = await pool.query(sql, values);
     return result.rows;

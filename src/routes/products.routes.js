@@ -5,6 +5,7 @@ const authenticateToken = require("../middleware/auth.middleware.js");
 const isAdmin = require("../middleware/admin.middleware.js");
 
 router.get("/", productsController.getAllProducts);
+router.get("/search", productsController.findProducts);
 router.get("/:id", productsController.getProductById);
 router.post("/", authenticateToken, isAdmin, productsController.addProduct);
 router.delete(
@@ -13,6 +14,5 @@ router.delete(
   isAdmin,
   productsController.deleteProduct
 );
-router.get("/products/search", productsController.findProducts);
 
 module.exports = router;

@@ -100,9 +100,12 @@ const addProduct = async (req, res) => {
 };
 
 const findProducts = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
   try {
     const query = req.query;
-    const products = await Product.findProducts(query);
+    const products = await Product.findProducts(query, page, limit);
     res.json(products);
   } catch (error) {
     console.error("Ошибка при поиске и фильтрации продуктов:", error);
